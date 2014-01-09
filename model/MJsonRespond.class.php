@@ -2,7 +2,7 @@
 class MJsonRespond
 {
 	protected $result = array('status'=>null, 'msg'=>null, 'data'=>null);
-	
+
 	const SUCCESS = 0;
     const FAIL = 1;
 
@@ -17,7 +17,6 @@ class MJsonRespond
 	public static function respond($status, $msg = null, $data = null)
 	{
 	    $respond = new MJsonRespond($status, $msg, $data);
-	    
 		return $respond;
 	}
 
@@ -32,7 +31,7 @@ class MJsonRespond
 	{
 		return json_encode($this->result);
 	}
-	
+
 	public function __set($key, $value)
 	{
 		assert(array_key_exists($key, $this->result));
@@ -48,10 +47,10 @@ class MJsonRespond
 		}
 		$this->result[$key] = $value;
 	}
-	
+
 	public function __get($key)
 	{
 		assert(array_key_exists($key, $this->result));
-		return $this->result[$key];	
+		return $this->result[$key];
 	}
 }

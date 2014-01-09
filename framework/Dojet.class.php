@@ -1,9 +1,42 @@
 <?php
-
+/**
+ * MIT License
+ * ===========
+ *
+ * Copyright (c) 2012 Leeyan <setimouse@gmail.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @category   Dojet
+ * @package    
+ * @subpackage 
+ * @author     Leeyan <setimouse@gmail.com>
+ * @copyright  2012 Leeyan.
+ * @license    http://www.opensource.org/licenses/mit-license.php  MIT License
+ * @version    0.1
+ * @link       http://
+ */
 class Dojet {
 
-    public function start() {
-//        $this->init();
+    public static function start() {
+        $this->init();
         $requestUri = substr($_SERVER['REQUEST_URI'], 1);
         $dispatcher = SingletonFactory::getInstance('Dispatcher');
         $dispatcher->dispatch($requestUri);
@@ -15,6 +48,8 @@ class Dojet {
 
         //  include configs
         $this->load_all_configs();
+
+        ini_set('display_errors', Config::configForKeyPath('global.display_errors'));
     }
 
     private function load_all_configs() {
@@ -39,66 +74,4 @@ class Dojet {
     }
 
 
-    /**
-     * 封装断言
-     *
-     * @param bool $condition
-     * @param string $message
-     * @param string $file
-     * @param string $line
-     */
-    public static function assert($condition, $message = null, $file = null, $line = null) {
-        if (MRuntime::getInstance()->currentRuntime() === C_RUNTIME_ONLINE) {
-            //  online, skip assert
-            return ;
-        }
-
-        if ($condition) {
-            return ;
-        }
-
-        Trace::fatal('assert failed. '.$message.', '.$file.', '.$line);
-        if (MRuntime::getInstance()->currentRuntime() !== C_RUNTIME_ONLINE) {
-            printbr($message.' '.$file.' '.$line);
-        }
-        assert($condition);
-    }
-
-    /**
-     * 数字断言
-     *
-     * @param mix $var
-     * @param string $file
-     * @param string $line
-     */
-    public static function assertIntNumeric($var, $file = null, $line = null) {
-        Dojet::assert(MVar::is_digital($var), 'nan, '.var_export($var, true), $file, $line);
-    }
-
-    /**
-     * 数字数组断言
-     *
-     * @param mix $var
-     * @param string $file
-     * @param string $line
-     */
-    public static function assertNumericArray($array, $file = null, $line = null) {
-        Dojet::assert(is_array($array), 'not an array', $file, $line);
-
-        foreach ($array as $val) {
-            Dojet::assertIntNumeric($val, $file, $line);
-        }
-    }
-
-    /**
-     * 非空数字数组断言
-     *
-     * @param mix $var
-     * @param string $file
-     * @param string $line
-     */
-    public static function assertNotEmptyNumericArray($array, $file = null, $line = null) {
-        Dojet::assertNumericArray($array, $file, $line);
-        Dojet::assert(!empty($array), 'array should not be empty', $file, $line);
-    }
 }
