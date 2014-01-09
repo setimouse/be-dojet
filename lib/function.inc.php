@@ -5,7 +5,7 @@ function gb2u($s) {
 }
 
 function u2gb($s) {
-	return _iconvEx('UTF-8', 'GB2312', $s);
+	return _iconvEx('UTF-8', 'GB18030', $s);
 }
 
 function _iconvEx($in_charset, $out_charset, $str) {
@@ -104,7 +104,6 @@ function printbr($str, $flush = true) {
 }
 
 function println($str, $flush = true){
-//	return;
 	if ( is_array($str) ) {
 		$str = print_r($str, true);
 	}
@@ -159,16 +158,6 @@ function safeUrl($url) {
 	return $url;
 }
 
-function lazyImage($imgUrl) {
-    $ua = $_SERVER['HTTP_USER_AGENT'];
-    if (MUserAgent::isSpiderUA($ua)) {
-        $html = ' src="'.safeUrl($imgUrl).'" ';
-    } else {
-        $html = ' src="'.C_FE_DEFAULT_IMAGE.'" sr-c="'.safeUrl($imgUrl).'" ';
-    }
-    return $html;
-}
-
 function safeUrlencode($str) {
     return urlencode($str);
 }
@@ -201,102 +190,13 @@ function replace_spec_char($url)
 	return str_replace("'", "\'", $url);
 }
 
-function revert_spec_char($url)
-{
-	return str_replace("\'", "'", $url);
-}
-
-/**
- * make up insert statement
- *
- * @param string $table
- * @param string $fields_values
- * @param DBProxy $dbProxy
- */
-function insertStatement($table, $fields_values, $dbProxy) {
-    $arrayFields = array();
-    $arrayValues = array();
-    foreach ($fields_values as $field => $value) {
-    	$arrayFields[] = '`'.$field.'`';
-    	$arrayValues[] = "'".$dbProxy->realEscapeString($value)."'";
-    }
-    $strFields = join(', ', $arrayFields);
-    $strValues = join(', ', $arrayValues);
-    $sql = "INSERT INTO $table($strFields) VALUES($strValues)";
-    return $sql;
-}
-
-/**
- * make up insert statement
- *
- * @param string $table
- * @param string $fields_values
- * @param string $updates
- * @param DBProxy $dbProxy
- */
-function insertOrUpdateStatement($table, $fields_values, $updates, $dbProxy) {
-    $arrayFields = array();
-    $arrayValues = array();
-    foreach ($fields_values as $field => $value) {
-    	$arrayFields[] = '`'.$field.'`';
-    	$arrayValues[] = "'".$dbProxy->realEscapeString($value)."'";
-    }
-    $strFields = join(', ', $arrayFields);
-    $strValues = join(', ', $arrayValues);
-
-    $arrayUpdates = array();
-    foreach ($updates as $upKey => $upValue) {
-    	$arrayUpdates[] = "`".$dbProxy->realEscapeString($upKey)."`='".$dbProxy->realEscapeString($upValue)."'";
-    }
-    $strUpdates = join(', ', $arrayUpdates);
-
-    $sql = "INSERT INTO $table($strFields)
-            VALUES($strValues)
-            ON DUPLICATE KEY UPDATE $strUpdates";
-
-    return $sql;
-}
-
-/**
- *
- *
- * @param string $strDefaultIp
- * @param bool $hasTransmit
- * @return string
- */
-function getConnectIp ($strDefaultIp = '0.0.0.0', $hasTransmit = true)
-{
-    $strIp = '';
-    if (! $hasTransmit && isset($_SERVER['REMOTE_ADDR']) ){
-    	$strIp = strip_tags($_SERVER['REMOTE_ADDR']);
-    } elseif (isset($_SERVER['HTTP_CLIENTIP'])) {
-        $strIp = strip_tags($_SERVER['HTTP_CLIENTIP']);
-    } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        $strIp = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        $strIp = strip_tags(trim($strIp));
-        $intPos = strrpos($strIp, ',');
-        if ($intPos > 0) {
-            $strIp = substr($strIp, $intPos + 1);
-        }
-    } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
-        $strIp = strip_tags($_SERVER['HTTP_CLIENT_IP']);
-    } elseif (isset($_SERVER['REMOTE_ADDR'])) {
-        $strIp = strip_tags($_SERVER['REMOTE_ADDR']);
-    }
-    $strIp = trim($strIp);
-    if (empty($strIp) || !ip2long($strIp)) {
-        $strIp = $strDefaultIp;
-    }
-    return $strIp;
-}
-
 /**
  * 获取客户端IP
  *
  * @param string $strDefaultIp
  * @return string
  */
-function getUserClientIp ($strDefaultIp = '0.0.0.0')
+function getUserClientIp($strDefaultIp = '0.0.0.0')
 {
     $strIp = '';
     if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -350,144 +250,6 @@ function defaultNullValue(&$var, $defaultValue = null) {
 function defaultEmptyValue(&$var, $defaultValue = null) {
     $defaultValue = defaultNullValue($defaultValue, $var);
     return empty($var) ? $defaultValue : $var;
-}
-
-function getHttps($url) {
-    $maxRetry = 3;
-    $retry = 0;
-    $result = false;
-    while ($retry < $maxRetry && !$result) {
-        $retry++;
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        $result = curl_exec($ch);
-        curl_close($ch);
-    }
-
-    return $result;
-}
-
-//http_proxy start
-function getMaxIdFromDb($mongo) {
-	$where = array();
-	$field = array('num_id');
-	$sort = array('num_id' => -1);
-	$skip = 0;
-	$limit = 1;
-	$needCount = null;
-	$result = $mongo->doSelect('http_proxy',  $where, $field, $sort, $skip, $limit, $needCount);
-	if(empty($result) || !isset($result[0]['num_id'])){
-		return 0;
-	} else {
-		return $result[0]['num_id'];
-	}
-}
-function getProxyListById($mongo, $id) {
-	$where = array('num_id'=>$id);
-	$field = array('proxy');
-	$result = $mongo->doSelect('http_proxy',  $where, $field);
-	if(empty($result) || !isset($result[0]['proxy'])){
-		println('select error........');
-		return null;
-	} else {
-		return $result[0]['proxy'];
-	}
-}
-function getLatestProxyArray() {
-	$db =DBMongoProxy::getInstance();
-	$tt = $db->connectDB(MBONLINE);
-	$maxId = getMaxIdFromDb($db);
-	$proxyArray = getProxyListById($db, $maxId);
-	return $proxyArray;
-}
-function getProxyFromDb() {
-	static $proxyArray = null;
-	static $length = 0;
-	static $curIndex = 0;
-	if($proxyArray === null){
-		$proxyArray = getLatestProxyArray();
-		$length = count($proxyArray);
-	}
-	if($curIndex >= $length) {
-		$proxyArray = getLatestProxyArray();
-		$length = count($proxyArray);
-		$curIndex = 0;
-	}
-	$proxy = $proxyArray[$curIndex]['ip'].':'.$proxyArray[$curIndex]['port'];
-	$curIndex++;
-	return $proxy;
-}
-//http_proxy end
-
-function getHttpsCheat($url, $refer, $proxy = null) {
-	$maxRetry = 3;
-	$retry = 0;
-	$result = false;
-
-	 while (!$result && $retry<1){
-	 	$retry++;
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		$agent = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
-		curl_setopt( $ch, CURLOPT_USERAGENT,  $agent);
-		curl_setopt($ch,CURLOPT_REFERER,$refer);
-		if($proxy !== null) {
-			curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
-			curl_setopt($ch, CURLOPT_PROXY, $proxy);
-			//url_setopt($ch, CURLOPT_PROXYUSERPWD, 'user:password');如果要密码的话，加上这个
-		}
-		curl_setopt($ch, CURLOPT_TIMEOUT, 20);
-		$result = curl_exec($ch);
-		if(!$result) {
-			println('curl get empty,the url='.$url.', proxy='.$proxy);
-		}
-		curl_close($ch);
-	}
-
-	return $result;
-}
-
-function getHttpsResult($url){
-	$rs = getHttps($url);
-	if($rs == false) {
-		return MJsonRespond::respond(E_FAIL, 'the url can not be visited,url='.$url, '0');
-	} else {
-		return json_decode($rs);
-	}
-}
-
-function uploadFileByHttp($url, $filePath) {
-	$maxRetry = 3;
-	$retry = 0;
-	$result = false;
-	$file = array("file"=>"@".$filePath);//文件路径，前面要加@，表明是文件上传.
-	while ($retry < $maxRetry && !$result) {
-		$retry++;
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch,CURLOPT_POST,true);
-		curl_setopt($ch,CURLOPT_POSTFIELDS,$file);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-		$result = curl_exec($ch);
-		curl_close($ch);
-	}
-	if($result == false) {
-	    return MJsonRespond::respond(E_FAIL, 'the url can not be visited,url='.$url, '0');
-	} else {
-	    $ret = json_decode($result);
-	    if (false === $ret || is_null($ret)) {
-	        return MJsonRespond::respond(E_FAIL, 'json parse error,url='.$url.', $result='.var_dump($result), '0');
-	    }
-	    return $ret;
-	}
 }
 
 function strtonum($str) {
@@ -802,11 +564,6 @@ function ksort_with_row($array, $rowKey)
 	foreach ($kvList as $key => $value)
 		$result[$key] = $array[$key];
 		return $result;
-}
-
-function array2str($array)
-{
-	return implode('+', $array);
 }
 
 

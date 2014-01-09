@@ -42,21 +42,5 @@ class MMath {
         $x = self::add($x, $x);
         return self::leftmove($x, $bits - 1);
     }
-    
-    //将超过31位的整形数据转化为负数
-    public static function zhuquInt($num) {
-    	$num = (float)$num;
-    	if($num > 2147483647){
-    		return -($num-2147483648 );
-    	} else {
-    		return (int)$num;
-    	}
-    }
-    
-    //将pro和value转化为唯一的id标识
-   public static  function getTagMongoInt64($prop, $value){
-    	$prop = self::zhuquInt($prop);
-    	return (new MongoInt64( ($prop<<32) + $value ));
-    }
 
 }
