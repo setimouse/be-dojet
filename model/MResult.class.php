@@ -1,13 +1,21 @@
 <?php
 class MResult {
-	public $error;
-	public $info;
+    public $error;
+    public $info;
 
     const SUCCESS = 0;
     const FAIL = 1;
 
     public static function result($error, $info = null) {
         return new MResult($error, $info);
+    }
+
+    public static function resultSuccess($info = null) {
+        return self::result(MResult::SUCCESS, $info);
+    }
+
+    public static function resultFail($info = null) {
+        return self::result(MResult::FAIL, $info);
     }
 
     /**
