@@ -11,13 +11,12 @@ class DAutoloader {
     }
 
     public static function register($func = null) {
-        if (is_callable($func)) {
-            spl_autoload_register($func);
-            return;
+        if (!is_callable($func)) {
+            $autoloader = self::getInstance();
+            $func = array($autoloader, 'autoload');
         }
 
-        $autoloader = self::getInstance();
-        spl_autoload_register(array($autoloader, 'autoload'));
+        spl_autoload_register($func);
     }
 
     protected function autoload($className) {
