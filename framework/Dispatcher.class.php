@@ -5,7 +5,7 @@ class Dispatcher {
         $requestUri = (string)$requestUri;
         $routes = $GLOBALS['config']['dispatch'];
 
-        Dojet::assert(is_array($routes), 'route error');
+        DAssert::assert(is_array($routes), 'route error');
 
         if (false !== strpos($requestUri, 'debug/')) {
             MDict::D('is_debug', true);
@@ -32,14 +32,14 @@ class Dispatcher {
 
                 $classFile = UI.$actionName.'.class.php';
 
-                Dojet::assert(file_exists($classFile), 'ui action does not exist', __FILE__, __LINE__);
+                DAssert::assert(file_exists($classFile), 'ui action does not exist', __FILE__, __LINE__);
 
                 require_once($classFile);
 
                 $className = basename($actionName);
                 $action = new $className;
 
-                Dojet::assert($action instanceof BaseAction, 'action is not BaseAction. '.$actionName);
+                DAssert::assert($action instanceof BaseAction, 'action is not BaseAction. '.$actionName);
 
     		    $action->execute();
 

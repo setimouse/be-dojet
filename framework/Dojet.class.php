@@ -25,8 +25,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @category   Dojet
- * @package    
- * @subpackage 
+ * @package
+ * @subpackage
  * @author     Leeyan <setimouse@gmail.com>
  * @copyright  2012 Leeyan.
  * @license    http://www.opensource.org/licenses/mit-license.php  MIT License
@@ -35,7 +35,7 @@
  */
 class Dojet {
 
-    public static function start() {
+    public function start() {
         $this->init();
         $requestUri = substr($_SERVER['REQUEST_URI'], 1);
         $dispatcher = SingletonFactory::getInstance('Dispatcher');
@@ -56,7 +56,7 @@ class Dojet {
         $dir = opendir(CONFIG);
         while (false !== ($confFile = readdir($dir))) {
             if ('.' === $confFile || '..' === $confFile || substr($confFile, -9) !== '.conf.php' || $confFile=='package.conf.php') {
-            	continue;
+                continue;
             }
 
             include_once(CONFIG.$confFile);
@@ -64,12 +64,15 @@ class Dojet {
     }
 
     private function load_all_packages() {
-    	include(CONFIG."package.conf.php");
+        if (!file_exists(CONFIG."package.conf.php")) {
+            return;
+        }
+        include(CONFIG."package.conf.php");
         $packages = Config::configForKeyPath('package');
         foreach ((array)$packages as $thePackage) {
-        	$confFile = DGLOBAL.$thePackage.'.conf.php';
-        	assert(file_exists($confFile));
-        	include_once($confFile);
+            $confFile = DGLOBAL.$thePackage.'.conf.php';
+            assert(file_exists($confFile));
+            include_once($confFile);
         }
     }
 
