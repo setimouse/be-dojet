@@ -2,26 +2,9 @@
 class Dispatcher {
 
     public static function dispatch($requestUri) {
-        $requestUri = (string)$requestUri;
-        $routes = $GLOBALS['config']['dispatch'];
+        $routes = Config::configForKeyPath('dispatch');
 
         DAssert::assert(is_array($routes), 'route error');
-
-        if (false !== strpos($requestUri, 'debug/')) {
-            MDict::D('is_debug', true);
-            $requestUri = (string)substr($requestUri, strlen('debug/'));
-        }
-
-        if (0 === strpos($requestUri, 'preview/')) {
-            MDict::D('is_preview', true);
-            $requestUri = (string)substr($requestUri, strlen('preview/'));
-
-            if (preg_match('/^(.*?)\//', $requestUri, $reg)) {
-                $preview_arg = $reg[1];
-                MDict::D('preview_arg', $preview_arg);
-                $requestUri = (string)substr($requestUri, strlen($preview_arg));
-            }
-        }
 
         foreach ($routes as $routeRegx => $actionName) {
     		if ( preg_match($routeRegx, $requestUri, $reg) ) {

@@ -21,6 +21,8 @@ class Dojet {
     }
 
     public function addPlugin(DJBasePlugin $plugin) {
+        DAssert::assert($plugin instanceof DJBasePlugin, 'plugin must implement DJBasePlugin',
+            __FILE__, __LINE__);
         $this->arrPlugins[] = $plugin;
     }
 
@@ -29,30 +31,54 @@ class Dojet {
         $this->load_all_configs();
 
         ini_set('display_errors', Config::configForKeyPath('global.display_errors'));
+
+        spl_autoload_register($this->autoload);
     }
 
     private function load_all_configs() {
-        $dir = opendir(CONFIG);
+        $this->load_config(CONFIG);
+        foreach ($this->arrPlugins as $plugin) {
+            $plugin->loadConfig();
+        }
+    }
+
+    public function load_config($dirname) {
+        $dir = opendir($dirname);
         while (false !== ($confFile = readdir($dir))) {
-            if ('.' === $confFile || '..' === $confFile || substr($confFile, -9) !== '.conf.php' || $confFile=='package.conf.php') {
+            if ('.' === $confFile || '..' === $confFile || substr($confFile, -9) !== '.conf.php') {
                 continue;
             }
 
-            include_once(CONFIG.$confFile);
+            if (file_exists($dirname.$confFile)) {
+                include_once($dirname.$confFile);
+            }
         }
     }
 
-    private function load_all_packages() {
-        if (!file_exists(CONFIG."package.conf.php")) {
-            return;
+    public function autoload($className) {
+        $include_path = array(
+            DLIB,
+            DDAL,
+            DMODEL,
+            FRAMEWORK,
+            DUTIL,
+        );
+
+        foreach ($include_path as $path) {
+            if ($this->loadClassRecursive($className, $path)) {
+                return false;
+            }
         }
-        include(CONFIG."package.conf.php");
-        $packages = Config::configForKeyPath('package');
-        foreach ((array)$packages as $thePackage) {
-            $confFile = DGLOBAL.$thePackage.'.conf.php';
-            assert(file_exists($confFile));
-            include_once($confFile);
+
+        foreach ($this->arrPlugins as $plugin) {
+            if($plugin->autoload($className)) {
+                //  class found, return!
+                return;
+            }
         }
+
+        trigger_error("class $className not found!\n");
     }
+
 
 }

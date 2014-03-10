@@ -1,7 +1,8 @@
 <?php
 interface DJBasePlugin {
 
-    public static function loadConfig();
-    public static function autoload();
+    public static function loadConfig($dirname);
+
+    public static function autoload($className);
 
 }
