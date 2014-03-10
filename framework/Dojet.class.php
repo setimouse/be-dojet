@@ -1,39 +1,17 @@
 <?php
 /**
- * MIT License
- * ===========
- *
- * Copyright (c) 2012 Leeyan <setimouse@gmail.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * @category   Dojet
- * @package
- * @subpackage
  * @author     Leeyan <setimouse@gmail.com>
- * @copyright  2012 Leeyan.
+ * @copyright  2009-2014 Leeyan.
  * @license    http://www.opensource.org/licenses/mit-license.php  MIT License
  * @version    0.1
- * @link       http://
  */
 class Dojet {
+
+    private $arrPlugins;
+
+    function __construct() {
+        $this->arrPlugins = array();
+    }
 
     public function start() {
         $this->init();
@@ -42,10 +20,11 @@ class Dojet {
         $dispatcher->dispatch($requestUri);
     }
 
-    private function init() {
-        //  include global packages
-        $this->load_all_packages();
+    public function addPlugin(DJBasePlugin $plugin) {
+        $this->arrPlugins[] = $plugin;
+    }
 
+    private function init() {
         //  include configs
         $this->load_all_configs();
 
@@ -75,6 +54,5 @@ class Dojet {
             include_once($confFile);
         }
     }
-
 
 }
