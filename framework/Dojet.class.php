@@ -7,38 +7,33 @@
  */
 class Dojet {
 
-    private $arrPlugins;
+    /**
+     * @var BaseService
+     **/
+    protected $service;
 
-    function __construct() {
-        $this->arrPlugins = array();
+    public function load(BaseService $service) {
+        // spl_autoload_register($this->autoload);
+
+        DAssert::assert($service instanceof BaseService, 'service must be BaseService');
+
+        $this->service = $service;
+
+        //  include configs
+        $this->load_all_configs();
     }
 
-    public function start() {
-        $this->init();
+    public function dispatch() {
         $requestUri = substr($_SERVER['REQUEST_URI'], 1);
-        $dispatcher = SingletonFactory::getInstance('Dispatcher');
+        $dispatcher = new Dispatcher($this->service);
         $dispatcher->dispatch($requestUri);
     }
 
-    public function addPlugin(DJBasePlugin $plugin) {
-        DAssert::assert($plugin instanceof DJBasePlugin, 'plugin must implement DJBasePlugin',
-            __FILE__, __LINE__);
-        $this->arrPlugins[] = $plugin;
-    }
-
-    private function init() {
-        //  include configs
-        $this->load_all_configs();
-
-        ini_set('display_errors', Config::configForKeyPath('global.display_errors'));
-
-        spl_autoload_register($this->autoload);
-    }
-
     private function load_all_configs() {
-        $this->load_config(CONFIG);
-        foreach ($this->arrPlugins as $plugin) {
-            $plugin->loadConfig();
+        $arrConfigPath = $this->service->getConfigPath();
+
+        foreach ($arrConfigPath as $configPath) {
+            $this->load_config($configPath);
         }
     }
 
@@ -57,11 +52,12 @@ class Dojet {
 
     public function autoload($className) {
         $include_path = array(
-            DLIB,
-            DDAL,
-            DMODEL,
-            FRAMEWORK,
-            DUTIL,
+            // DLIB,
+            // DDAL,
+            // DMODEL,
+            // FRAMEWORK,
+            // DUTIL,
+            DOJET,
         );
 
         foreach ($include_path as $path) {
@@ -70,15 +66,31 @@ class Dojet {
             }
         }
 
-        foreach ($this->arrPlugins as $plugin) {
-            if($plugin->autoload($className)) {
-                //  class found, return!
-                return;
-            }
-        }
-
         trigger_error("class $className not found!\n");
     }
 
+    public function loadClassRecursive($className, $path) {
+        $filename = $path.'/'.$className.'.class.php';
+        if (file_exists($filename)) {
+            require_once($filename);
+            return true;
+        }
+
+        $dir = opendir($path);
+        while (false !== ($confFile = readdir($dir))) {
+            if ('.' === $confFile || '..' === $confFile) {
+                continue;
+            }
+
+            $dirname = $path.'/'.$confFile;
+            if (is_dir($dirname)) {
+                if ($this->loadClassRecursive($className, $dirname)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
 }

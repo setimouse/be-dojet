@@ -1,6 +1,6 @@
 <?php
-class DAssert {    
-	
+class DAssert {
+
 	/**
      * 封装断言
      *
@@ -10,10 +10,6 @@ class DAssert {
      * @param string $line
      */
     public static function assert($condition, $message = null, $file = null, $line = null) {
-        if (MRuntime::getInstance()->currentRuntime() === C_RUNTIME_ONLINE) {
-            //  online, skip assert
-            return ;
-        }
 
         if ($condition) {
             return ;

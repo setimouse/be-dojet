@@ -2,8 +2,13 @@
 class DAutoloader {
 
     private static $instance;
+    private $arrAutoloader;
 
-    protected static function getInstance() {
+    function __construct() {
+        $this->arrAutoloader = array();
+    }
+
+    public static function getInstance() {
         if (is_null(self::$instance)) {
             self::$instance = new DAutoloader();
         }
@@ -19,18 +24,23 @@ class DAutoloader {
         spl_autoload_register($func);
     }
 
+    public function addAutoloader(IAutoloader $autoloader) {
+        DAssert::assert($autoloader instanceof IAutoloader, 'autoloader must be IAutoloader');
+        $this->arrAutoloader[] = $autoloader;
+    }
+
     protected function autoload($className) {
         $include_path = array(
-            UI,
-            LIB,
-            DAL,
             DLIB,
-            DDAL,
-            MODEL,
             DMODEL,
-            FRAMEWORK,
             DUTIL,
+            FRAMEWORK,
+            DOJET,
         );
+
+        foreach ($this->arrAutoloader as $autoloader) {
+            array_merge($include_path, $autoloader->getAutoloadPath());
+        }
 
         foreach ($include_path as $path) {
             $arrayClassFileNames = array($path.$className.'.class.php', $path.$className.'.php');
@@ -43,30 +53,6 @@ class DAutoloader {
         }
 
         trigger_error("class $className not found!\n");
-    }
-
-    public function loadClassRecursive($className, $path) {
-        $filename = $path.'/'.$className.'.class.php';
-        if (file_exists($filename)) {
-            require_once($filename);
-            return true;
-        }
-
-        $dir = opendir($path);
-        while (false !== ($confFile = readdir($dir))) {
-            if ('.' === $confFile || '..' === $confFile) {
-                continue;
-            }
-
-            $dirname = $path.'/'.$confFile;
-            if (is_dir($dirname)) {
-                if ($this->loadClassRecursive($className, $dirname)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
 }
