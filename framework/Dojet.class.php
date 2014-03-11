@@ -13,7 +13,6 @@ class Dojet {
     protected $service;
 
     public function load(BaseService $service) {
-        // spl_autoload_register($this->autoload);
 
         DAssert::assert($service instanceof BaseService, 'service must be BaseService');
 
@@ -48,49 +47,6 @@ class Dojet {
                 include_once($dirname.$confFile);
             }
         }
-    }
-
-    public function autoload($className) {
-        $include_path = array(
-            // DLIB,
-            // DDAL,
-            // DMODEL,
-            // FRAMEWORK,
-            // DUTIL,
-            DOJET,
-        );
-
-        foreach ($include_path as $path) {
-            if ($this->loadClassRecursive($className, $path)) {
-                return false;
-            }
-        }
-
-        trigger_error("class $className not found!\n");
-    }
-
-    public function loadClassRecursive($className, $path) {
-        $filename = $path.'/'.$className.'.class.php';
-        if (file_exists($filename)) {
-            require_once($filename);
-            return true;
-        }
-
-        $dir = opendir($path);
-        while (false !== ($confFile = readdir($dir))) {
-            if ('.' === $confFile || '..' === $confFile) {
-                continue;
-            }
-
-            $dirname = $path.'/'.$confFile;
-            if (is_dir($dirname)) {
-                if ($this->loadClassRecursive($className, $dirname)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
 }
