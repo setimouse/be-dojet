@@ -25,3 +25,4 @@ function startWebService(BaseWebService $webService) {
 
     $webService->dispatchFinished();
 }
+

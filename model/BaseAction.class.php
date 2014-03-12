@@ -29,23 +29,12 @@ abstract class BaseAction {
      * @param string $template
      */
     public function display($template) {
-        $templateFile = TEMPLATE.$template;
+        $templateFile = $template;
         DAssert::assert(file_exists($templateFile), 'template not exist. '.$template);
 
         $collision = extract($this->_tplData, EXTR_PREFIX_ALL, 'tpl');
 
         include($templateFile);
-    }
-
-    /**
-     * 返回json结果
-     *
-     * @param MJsonRespond $jsonRespond
-     */
-    public function displayJson($jsonRespond) {
-        $json = $jsonRespond->toJson();
-        $this->assign('json', $json);
-        $this->display('jsonrespond.tpl.php');
     }
 
     public function display404() {
@@ -54,6 +43,6 @@ abstract class BaseAction {
     }
 
 
-    public abstract function execute();
+    abstract public function execute();
 
 }
