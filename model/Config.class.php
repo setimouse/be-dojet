@@ -1,6 +1,15 @@
 <?php
 
 class Config {
+
+    private static $config;
+
+    public static function loadConfig($confFile) {
+        $filename = $confFile.'.conf.php';
+        DAssert::assert(file_exists($filename), 'conf file not exist! '.$filename);
+        require_once($filename);
+    }
+
     /**
      * 通过keypath获取value
      * keypath是以'.'分割的字符串
@@ -11,7 +20,7 @@ class Config {
     public static function configForKeyPath($keyPath, $config = null) {
         $key = strtok($keyPath, '.');
         if (is_null($config)) {
-            $config = $GLOBALS['config'];
+            $config = self::$config;
         }
         while ($key && $config) {
             if (!key_exists($key, $config)) {
@@ -25,7 +34,7 @@ class Config {
 
     public static function &configRefForKeyPath($keyPath) {
         $key = strtok($keyPath, '.');
-        $value = &$GLOBALS['config'];
+        $value = &self::$config;
         while ($key) {
             if (!is_array($value)) {
             	$value = array();
@@ -48,7 +57,7 @@ class Config {
      * @return mix
      */
     public static function runtimeConfigForKeyPath($keyPath, $runtime = null) {
-        ($runtime !== null) or $runtime = Config::configForKeyPath('global.runtime');
+        ($runtime !== null) or $runtime = Config::configForKeyPath('runtime');
         if (false !== strpos($keyPath, '.$.')) {
             $runtimeKeypath = str_replace('.$.', '.'.$runtime.'.', $keyPath);
         } else {

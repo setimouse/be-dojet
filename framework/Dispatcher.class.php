@@ -8,6 +8,8 @@ class Dispatcher {
 
     function __construct(BaseWebService $webService) {
         $this->webService = $webService;
+        $dispatchConf = $webService->getDispatchConf();
+        Config::loadConfig($dispatchConf);
     }
 
     public function dispatch($requestUri) {

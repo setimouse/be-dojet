@@ -2,7 +2,11 @@
 /**
  *
  */
-abstract class BaseWebService extends BaseService{
+abstract class BaseWebService extends BaseService {
+
+    public function getDispatchConf() {
+        return '';
+    }
 
     public function dispatchFinished() {}
 
