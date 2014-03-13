@@ -3,8 +3,8 @@ abstract class BaseService {
 
     public function dojetLoaded() {}
 
-    public function getConfigPath() {
-        return array('');
+    public function getConfigs() {
+        return array();
     }
 
 }

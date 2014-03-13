@@ -1,6 +1,11 @@
 <?php
 
 class Config {
+
+    public static function loadConfig($confFile) {
+        require_once($confFile);
+    }
+
     /**
      * 通过keypath获取value
      * keypath是以'.'分割的字符串

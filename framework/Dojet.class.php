@@ -24,28 +24,16 @@ class Dojet {
 
     public function dispatch() {
         $requestUri = substr($_SERVER['REQUEST_URI'], 1);
+        DAssert::assert($this->service instanceof BaseWebService, 'dispatch service must be BaseWebService');
         $dispatcher = new Dispatcher($this->service);
         $dispatcher->dispatch($requestUri);
     }
 
     private function load_all_configs() {
-        $arrConfigPath = $this->service->getConfigPath();
+        $arrConfigs = $this->service->getConfigs();
 
-        foreach ($arrConfigPath as $configPath) {
-            $this->load_config($configPath);
-        }
-    }
-
-    public function load_config($dirname) {
-        $dir = opendir($dirname);
-        while (false !== ($confFile = readdir($dir))) {
-            if ('.' === $confFile || '..' === $confFile || substr($confFile, -9) !== '.conf.php') {
-                continue;
-            }
-
-            if (file_exists($dirname.$confFile)) {
-                include_once($dirname.$confFile);
-            }
+        foreach ($arrConfigs as $confFile) {
+            Config::loadConfig($confFile);
         }
     }
 
