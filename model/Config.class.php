@@ -22,7 +22,8 @@ class Config {
         if (is_null($config)) {
             $config = self::$config;
         }
-        while ($key && $config) {
+
+        while (false !== $key && $config) {
             if (!key_exists($key, $config)) {
                 return null;
             }

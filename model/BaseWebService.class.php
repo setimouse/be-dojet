@@ -14,4 +14,9 @@ abstract class BaseWebService extends BaseService {
         return '';
     }
 
+    public function requestUriWillDispatch($requestUri) {
+        $requestUri = substr($requestUri, 1);
+        return $requestUri;
+    }
+
 }

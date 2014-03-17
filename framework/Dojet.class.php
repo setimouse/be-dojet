@@ -23,8 +23,8 @@ class Dojet {
     }
 
     public function dispatch() {
-        $requestUri = substr($_SERVER['REQUEST_URI'], 1);
         DAssert::assert($this->service instanceof BaseWebService, 'dispatch service must be BaseWebService');
+        $requestUri = $this->service->requestUriWillDispatch($_SERVER['REQUEST_URI']);
         $dispatcher = new Dispatcher($this->service);
         $dispatcher->dispatch($requestUri);
     }
