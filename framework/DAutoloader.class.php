@@ -2,11 +2,11 @@
 class DAutoloader {
 
     private static $instance;
-    private $arrAutoloader;
 
-    function __construct() {
-        $this->arrAutoloader = array();
-    }
+    /**
+     * @var IAutoloader
+     **/
+    private $delegate;
 
     public static function getInstance() {
         if (is_null(self::$instance)) {
@@ -24,9 +24,9 @@ class DAutoloader {
         spl_autoload_register($func);
     }
 
-    public function addAutoloader(IAutoloader $autoloader) {
-        DAssert::assert($autoloader instanceof IAutoloader, 'autoloader must be IAutoloader');
-        $this->arrAutoloader[] = $autoloader;
+    public function setDelegate(IAutoloader $delegate) {
+        DAssert::assert($delegate instanceof IAutoloader, 'autoloader must be IAutoloader');
+        $this->delegate = $delegate;
     }
 
     protected function getClassCacheKey($className, IAutoloader $autoloader) {
@@ -35,23 +35,28 @@ class DAutoloader {
     }
 
     protected function cachedAutoload($className) {
-        foreach ($this->arrAutoloader as $autoloader) {
-            $classKey = $this->getClassCacheKey($className, $autoloader);
-            $cachePath = $autoloader->getAutoloadCachePath();
+        $delegate = $this->delegate;
+        do {
+            if (is_null($delegate)) {
+                break;
+            }
+
+            $classKey = $this->getClassCacheKey($className, $delegate);
+            $cachePath = $delegate->getAutoloadCachePath();
             if (empty($cachePath)) {
-                continue;
+                break;
             }
             $cacheFilename = $cachePath.'/'.$classKey;
             if (!file_exists($cacheFilename)) {
-                continue;
+                break;
             }
             $classFilename = file_get_contents($cacheFilename);
             if (!file_exists($classFilename)) {
-                continue;
+                break;
             }
             require_once($classFilename);
             return;
-        }
+        } while (0);
 
         return $this->autoload($className);
     }
@@ -65,8 +70,8 @@ class DAutoloader {
             DOJET,
         );
 
-        foreach ($this->arrAutoloader as $autoloader) {
-            $include_path = array_merge($include_path, $autoloader->getAutoloadPath());
+        if ($this->delegate) {
+            $include_path = array_merge($include_path, $this->delegate->getAutoloadPath());
         }
 
         foreach ($include_path as $path) {
@@ -75,15 +80,17 @@ class DAutoloader {
                 if (file_exists($filename)) {
                     require_once($filename);
                     //  save cache
-                    foreach ($this->arrAutoloader as $autoloader) {
-                        $cachePath = $autoloader->getAutoloadCachePath();
+                    if ($this->delegate) {
+                        $cachePath = $this->delegate->getAutoloadCachePath();
                         if (empty($cachePath)) {
                             continue;
                         }
-                        $classKey = $this->getClassCacheKey($className, $autoloader);
+                        $classKey = $this->getClassCacheKey($className, $this->delegate);
+                        $filename = realpath($filename);
                         $cacheFilename = $cachePath.'/'.$classKey;
                         @file_put_contents($cacheFilename, $filename);
                     }
+                    //  save cache
                     return ;
                 }
             }
