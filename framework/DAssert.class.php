@@ -28,7 +28,7 @@ class DAssert {
      * @param string $line
      */
     public static function assertIntNumeric($var, $file = null, $line = null) {
-        DAssert::assert(MVar::is_digital($var), 'nan, '.var_export($var, true), $file, $line);
+        DAssert::assert(is_numeric($var), 'nan, '.var_export($var, true), $file, $line);
     }
 
     /**

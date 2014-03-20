@@ -18,7 +18,7 @@ class DAutoloader {
     public static function register($func = null) {
         if (!is_callable($func)) {
             $autoloader = self::getInstance();
-            $func = array($autoloader, 'autoload');
+            $func = array($autoloader, 'cachedAutoload');
         }
 
         spl_autoload_register($func);
@@ -27,6 +27,33 @@ class DAutoloader {
     public function addAutoloader(IAutoloader $autoloader) {
         DAssert::assert($autoloader instanceof IAutoloader, 'autoloader must be IAutoloader');
         $this->arrAutoloader[] = $autoloader;
+    }
+
+    protected function getClassCacheKey($className, IAutoloader $autoloader) {
+        $id = $autoloader->getAutoloadCacheIdentify();
+        return sha1($id.$className);
+    }
+
+    protected function cachedAutoload($className) {
+        foreach ($this->arrAutoloader as $autoloader) {
+            $classKey = $this->getClassCacheKey($className, $autoloader);
+            $cachePath = $autoloader->getAutoloadCachePath();
+            if (empty($cachePath)) {
+                continue;
+            }
+            $cacheFilename = $cachePath.'/'.$classKey;
+            if (!file_exists($cacheFilename)) {
+                continue;
+            }
+            $classFilename = file_get_contents($cacheFilename);
+            if (!file_exists($classFilename)) {
+                continue;
+            }
+            require_once($classFilename);
+            return;
+        }
+
+        return $this->autoload($className);
     }
 
     protected function autoload($className) {
@@ -47,6 +74,16 @@ class DAutoloader {
             foreach ($arrayClassFileNames as $filename) {
                 if (file_exists($filename)) {
                     require_once($filename);
+                    //  save cache
+                    foreach ($this->arrAutoloader as $autoloader) {
+                        $cachePath = $autoloader->getAutoloadCachePath();
+                        if (empty($cachePath)) {
+                            continue;
+                        }
+                        $classKey = $this->getClassCacheKey($className, $autoloader);
+                        $cacheFilename = $cachePath.'/'.$classKey;
+                        @file_put_contents($cacheFilename, $filename);
+                    }
                     return ;
                 }
             }
