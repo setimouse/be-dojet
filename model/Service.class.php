@@ -4,13 +4,14 @@
  * @author setimouse@gmail.com
  * @since 2014 5 2
  */
-abstract class Service {
+abstract class Service implements IDojetDelegate, IConfigDelegate {
 
     private $dojetDelegate;
     private $configDelegate;
 
     function __construct() {
-
+        $this->setDojetDelegate($this);
+        $this->setConfigDelegate($this);
     }
 
     public function setDojetDelegate(IDojetDelegate $delegate) {
@@ -29,6 +30,17 @@ abstract class Service {
 
     public function configDelegate() {
         return $this->configDelegate;
+    }
+
+    //  config delegate
+    public function configs() {
+        $configs = array();
+
+        return $configs;
+    }
+
+    public function dojetDidStart() {
+
     }
 
 }

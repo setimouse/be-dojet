@@ -19,3 +19,7 @@ function startWebService(WebService $webService) {
     $dojet->start($webService);
 }
 
+function startCliService(CliService $cliService) {
+    $dojet = new Dojet();
+    $dojet->start($cliService);
+}
