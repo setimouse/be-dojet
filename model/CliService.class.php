@@ -3,15 +3,10 @@
  * @author liyan
  * @since 2014 5 1
  */
-abstract class CliService extends Service implements IDojetDelegate {
+abstract class CliService extends Service {
 
     function __construct() {
         parent::__construct();
-        $this->setDojetDelegate($this);
-    }
-
-    public function dojetDidStart() {
-
     }
 
 }

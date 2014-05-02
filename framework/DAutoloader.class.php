@@ -67,7 +67,7 @@ class DAutoloader {
             DMODEL,
             DUTIL,
             FRAMEWORK,
-            DOJET,
+            DOJET_PATH,
         );
 
         if ($this->delegate) {
@@ -75,7 +75,7 @@ class DAutoloader {
         }
 
         foreach ($include_path as $path) {
-            $arrayClassFileNames = array($path.$className.'.class.php', $path.$className.'.php');
+            $arrayClassFileNames = array($path.$className.'.class.php');
             foreach ($arrayClassFileNames as $filename) {
                 if (file_exists($filename)) {
                     require_once($filename);
