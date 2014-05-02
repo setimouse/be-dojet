@@ -6,7 +6,7 @@ class Dispatcher {
      **/
     private $webService;
 
-    function __construct(BaseWebService $webService) {
+    function __construct(WebService $webService) {
         $this->webService = $webService;
         $dispatchConf = $webService->getDispatchConf();
         Config::loadConfig($dispatchConf);

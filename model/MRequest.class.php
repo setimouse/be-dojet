@@ -24,6 +24,11 @@ class MRequest {
         return isset($_SERVER[$key]) ? $_SERVER[$key] : null;
     }
 
+    public static function header($key) {
+        $header = strtoupper('HTTP_'.$key);
+        return self::server($header);
+    }
+
     public static function file($key) {
         return isset($_FILES[$key]) ? $_FILES[$key] : null;
     }

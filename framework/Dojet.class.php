@@ -12,25 +12,20 @@ class Dojet {
      **/
     protected $service;
 
-    public function load(BaseService $service) {
+    public function start(Service $service) {
 
-        DAssert::assert($service instanceof BaseService, 'service must be BaseService');
+        DAssert::assert($service instanceof Service, 'service must be Service');
 
         $this->service = $service;
 
         //  include configs
         $this->load_all_configs();
-    }
 
-    public function dispatch() {
-        DAssert::assert($this->service instanceof BaseWebService, 'dispatch service must be BaseWebService');
-        $requestUri = $this->service->requestUriWillDispatch($_SERVER['REQUEST_URI']);
-        $dispatcher = new Dispatcher($this->service);
-        $dispatcher->dispatch($requestUri);
+        $service->dojetDelegate()->dojetDidStart();
     }
 
     private function load_all_configs() {
-        $arrConfigs = $this->service->getConfigs();
+        $arrConfigs = $this->service->configDelegate()->configs();
 
         foreach ($arrConfigs as $confFile) {
             Config::loadConfig($confFile);
