@@ -8,9 +8,12 @@ class Trace
     const NOTICE= 0x2;
     const WARN  = 0x4;
     const ERROR = 0x8;
+    const VERBOSE = 0x10;
 
-    const TRACE_ALL = 0xff;
+    const TRACE_ALL = 0xffff;
     const TRACE_OFF = 0x0;
+
+    private static $requestId; //  identify current request
 
     /**
      * @return Trace
@@ -20,10 +23,16 @@ class Trace
         if (!(self::$instance instanceof Trace))
         {
             self::$instance = new Trace();
+            self::$requestId = crc32(uniqid().microtime(true));
         }
 
         return self::$instance;
     }
+
+    public static function requestID() {
+        return self::$requestId;
+    }
+
 
     public static function debug($msg, $file = null, $line = null)
     {
@@ -35,6 +44,12 @@ class Trace
     {
         $traceObj = self::getInstance();
         $traceObj->_trace($msg, self::NOTICE, $file, $line);
+    }
+
+    public static function verbose($msg, $file = null, $line = null)
+    {
+        $traceObj = self::getInstance();
+        $traceObj->_trace($msg, self::VERBOSE, $file, $line);
     }
 
     public static function warn($msg, $file = null, $line = null)
@@ -51,9 +66,8 @@ class Trace
 
     protected function _trace($msg, $level, $file = '', $line = '')
     {
-        if ( !in_array($level, array(self::TRACE_ALL, self::DEBUG, self::ERROR, self::NOTICE, self::TRACE_OFF, self::WARN))
-            || 0 === ($level & Config::runtimeConfigForKeyPath('global.traceLevel')) )
-        {
+        $traceLevel = Config::runtimeConfigForKeyPath('global.traceLevel');
+        if (0 === $level & $traceLevel) {
             return;
         }
 
@@ -62,33 +76,28 @@ class Trace
             return;
         }
 
-        $tracefile = self::get_logfile($level);
-
+        $tracefile = self::getLogFile($level);
         $filePath = realpath($path).DIRECTORY_SEPARATOR.$tracefile;
 
-        if ( is_array($msg) || is_object($msg) )
-        {
+        if (is_array($msg) || is_object($msg)) {
             $msg = print_r($msg, true);
         }
 
         $pid = self::getpid();
         $ip = getUserClientIp();
 
-        $trace = "[".date("y-m-d H:i:s")."][$pid][$ip] $msg";
+        $trace = "[".date("y-m-d H:i:s")."][$pid][".self::$requestId."][$ip] $msg";
 
-        if ( !empty($file) )
-        {
+        if (!empty($file)) {
             $trace.= "\t[$file]";
         }
 
-        if ( !empty($line) )
-        {
+        if (!empty($line)) {
             $trace.= "\t[$line]";
         }
 
         $trace.= "\n";
-        if ( $fp = @fopen($filePath, 'a') )
-        {
+        if ($fp = @fopen($filePath, 'a')) {
             @fwrite($fp, $trace);
             @fclose($fp);
         }
@@ -109,7 +118,7 @@ class Trace
         return posix_getpid();
     }
 
-    protected function get_logfile($level)
+    protected function getLogFile($level)
     {
         $strLogfile = date("Ymd", time());
         switch ($level)
@@ -122,6 +131,9 @@ class Trace
                 break;
             case self::WARN:
                 $strLogfile = 'warn.'.$strLogfile;
+                break;
+            case self::VERBOSE:
+                $strLogfile = 'verbose.'.$strLogfile;
                 break;
             case self::NOTICE:
                 $strLogfile = 'notice.'.$strLogfile;
