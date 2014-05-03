@@ -6,20 +6,8 @@
  */
 abstract class WebService extends Service implements IDispatcherDelegate {
 
-    private $dispatcherDelegate;
-
-    function __construct() {
-        parent::__construct();
-        $this->setDispatcherDelegate($this);
-    }
-
-    public function setDispatcherDelegate(IDispatcherDelegate $delegate) {
-        DAssert::assert($delegate instanceof IDispatcherDelegate, 'illegal DispatcherDelegate');
-        $this->dispatcherDelegate = $delegate;
-    }
-
     public function dispatcherDelegate() {
-        return $this->dispatcherDelegate;
+        return $this;
     }
 
     //  dispatcher delegate
