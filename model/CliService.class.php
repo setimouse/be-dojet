@@ -5,8 +5,4 @@
  */
 abstract class CliService extends Service {
 
-    function __construct() {
-        parent::__construct();
-    }
-
 }

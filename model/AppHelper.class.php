@@ -1,5 +1,5 @@
 <?php
-class AppHelper implements IConfigDelegate {
+abstract class AppHelper implements IConfigDelegate, IAutoloader {
 
     private static $instance = null;
 
@@ -13,6 +13,18 @@ class AppHelper implements IConfigDelegate {
 
     public function configs() {
         return array();
+    }
+
+    public function getAutoloadPath() {
+        return '';
+    }
+
+    public function getAutoloadCachePath() {
+        return null;
+    }
+
+    public function getAutoloadCacheIdentify() {
+        return '';
     }
 
 }
