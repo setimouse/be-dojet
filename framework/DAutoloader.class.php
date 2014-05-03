@@ -80,15 +80,16 @@ class DAutoloader {
                 if (file_exists($filename)) {
                     require_once($filename);
                     //  save cache
-                    if ($this->delegate) {
+                    while ($this->delegate) {
                         $cachePath = $this->delegate->getAutoloadCachePath();
                         if (empty($cachePath)) {
-                            continue;
+                            break;
                         }
                         $classKey = $this->getClassCacheKey($className, $this->delegate);
                         $filename = realpath($filename);
                         $cacheFilename = $cachePath.'/'.$classKey;
                         @file_put_contents($cacheFilename, $filename);
+                        break;
                     }
                     //  save cache
                     return ;
