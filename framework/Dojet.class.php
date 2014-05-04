@@ -21,11 +21,11 @@ class Dojet {
         //  include configs
         $this->load_all_configs();
 
-        $service->dojetDelegate()->dojetDidStart();
+        $service->dojetDidStart();
     }
 
     private function load_all_configs() {
-        $arrConfigs = $this->service->configDelegate()->configs();
+        $arrConfigs = $this->service->configDelegate()->getConfigFiles();
 
         foreach ($arrConfigs as $confFile) {
             Config::loadConfig($confFile);

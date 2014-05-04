@@ -27,22 +27,28 @@ class Dispatcher {
 
                 $classFile = $actionPath.$actionName.'.class.php';
 
-                DAssert::assert(file_exists($classFile), 'ui action does not exist', __FILE__, __LINE__);
+                DAssert::assert(file_exists($classFile),
+                    'ui action does not exist', __FILE__, __LINE__);
 
                 require_once($classFile);
 
                 $className = basename($actionName);
                 $action = new $className;
 
-                DAssert::assert($action instanceof BaseAction, 'action is not BaseAction. '.$actionName);
+                DAssert::assert($action instanceof BaseAction,
+                    'action is not BaseAction. '.$actionName);
 
                 $action->execute();
+
+                $this->webService->dispatchFinished();
 
                 return ;
             }
         }
 
         header('HTTP/1.1 404 Not Found');
+
+        $this->webService->dispatchFinished();
     }
 
 }

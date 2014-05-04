@@ -11,12 +11,12 @@ abstract class AppHelper implements IConfigDelegate, IAutoloader {
         return self::$instance;
     }
 
-    public function configs() {
+    public function getConfigFiles() {
         return array();
     }
 
     public function getAutoloadPath() {
-        return '';
+        return array();
     }
 
     public function getAutoloadCachePath() {

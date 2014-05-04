@@ -6,6 +6,6 @@
  */
 interface IConfigDelegate {
 
-    public function configs();
+    public function getConfigFiles();
 
 }

@@ -4,25 +4,10 @@
  * @author setimouse@gmail.com
  * @since 2014 5 2
  */
-abstract class Service implements IDojetDelegate, IConfigDelegate {
+abstract class Service {
 
-    public function dojetDelegate() {
-        return $this;
-    }
+    abstract public function configDelegate();
 
-    public function configDelegate() {
-        return $this;
-    }
-
-    //  config delegate
-    public function configs() {
-        $configs = array();
-
-        return $configs;
-    }
-
-    public function dojetDidStart() {
-
-    }
+    public function dojetDidStart() {}
 
 }
