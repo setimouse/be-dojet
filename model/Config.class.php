@@ -18,19 +18,11 @@ class Config {
      * @return mix
      */
     public static function configForKeyPath($keyPath, $config = null) {
-        $key = strtok($keyPath, '.');
         if (is_null($config)) {
             $config = self::$config;
         }
 
-        while (false !== $key && $config) {
-            if (!key_exists($key, $config)) {
-                return null;
-            }
-        	$config = $config[$key];
-        	$key = strtok('.');
-        }
-        return $config;
+        return XPath::path($keyPath, $config);
     }
 
     public static function &configRefForKeyPath($keyPath) {
@@ -38,14 +30,14 @@ class Config {
         $value = &self::$config;
         while ($key) {
             if (!is_array($value)) {
-            	$value = array();
+                $value = array();
             }
 
-            if (!key_exists($key, $value)) {
-            	$value[$key] = null;
+            if (!key_exists($key, (array)$value)) {
+                $value[$key] = null;
             }
-        	$value = &$value[$key];
-        	$key = strtok('.');
+            $value = &$value[$key];
+            $key = strtok('.');
         }
         return $value;
     }
@@ -67,15 +59,3 @@ class Config {
         return Config::configForKeyPath($runtimeKeypath);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
