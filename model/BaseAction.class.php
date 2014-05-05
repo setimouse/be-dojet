@@ -7,10 +7,13 @@
  */
 abstract class BaseAction {
 
-    protected $_tplData;
+    protected $tplData;
+
+    protected $arrHeader;
 
     function __construct() {
-        $this->_tplData = array();
+        $this->tplData = array();
+        $this->arrHeader = array();
     }
 
     /**
@@ -20,7 +23,7 @@ abstract class BaseAction {
      * @param mix $value
      */
     public function assign($key, $value) {
-        $this->_tplData[$key] = $value;
+        $this->tplData[$key] = $value;
     }
 
     /**
@@ -32,7 +35,11 @@ abstract class BaseAction {
         $templateFile = $template;
         DAssert::assert(file_exists($templateFile), 'template not exist. '.$template);
 
-        $collision = extract($this->_tplData, EXTR_PREFIX_ALL, 'tpl');
+        $collision = extract($this->tplData, EXTR_PREFIX_ALL, 'tpl');
+
+        foreach ($this->arrHeader as $key => $value) {
+            header($key.":".$value);
+        }
 
         include($templateFile);
     }
@@ -42,6 +49,16 @@ abstract class BaseAction {
         exit();
     }
 
+    public function addHeader($key, $value) {
+        DAssert::assert(is_string($key) && is_string($value), 'header must be string',
+            __FILE__, __LINE__);
+        $this->arrHeader[$key] = $value;
+    }
+
+    public function setExpire($timestamp) {
+        $gmtime = date("r", $timestamp);
+        $this->addHeader('Expires', $gmtime);
+    }
 
     abstract public function execute();
 
