@@ -13,6 +13,8 @@ class Trace
     const TRACE_ALL = 0xffff;
     const TRACE_OFF = 0x0;
 
+    private static $count = 0;
+
     private static $requestId; //  identify current request
 
     /**
@@ -86,7 +88,14 @@ class Trace
         $pid = self::getpid();
         $ip = getUserClientIp();
 
-        $trace = "[".date("y-m-d H:i:s")."][$pid][".self::$requestId."][$ip] $msg";
+        $trace = sprintf("%s|%ld|%ld|%s|%d| %s"
+                date("y-m-d H:i:s"),
+                $pid,
+                self::$requestId,
+                $ip,
+                self::$count++,
+                $msg
+            );
 
         if (!empty($file)) {
             $trace.= "\t[$file]";
@@ -97,6 +106,7 @@ class Trace
         }
 
         $trace.= "\n";
+
         if ($fp = @fopen($filePath, 'a')) {
             @fwrite($fp, $trace);
             @fclose($fp);
