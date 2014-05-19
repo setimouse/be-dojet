@@ -88,7 +88,7 @@ class Trace
         $pid = self::getpid();
         $ip = getUserClientIp();
 
-        $trace = sprintf("%s|%ld|%ld|%s|%d| %s"
+        $trace = sprintf("%s|%ld|%ld|%s|%d| %s",
                 date("y-m-d H:i:s"),
                 $pid,
                 self::$requestId,
