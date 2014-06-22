@@ -243,13 +243,29 @@ function setValueIfEmpty(&$var, $defaultValue) {
     $var = empty($var) ? $defaultValue : $var;
 }
 
-function defaultNullValue(&$var, $defaultValue = null) {
+function defaultNullValue($var, $defaultValue = null) {
     return is_null($var) ? $defaultValue : $var;
 }
 
-function defaultEmptyValue(&$var, $defaultValue = null) {
+function defaultEmptyValue($var, $defaultValue = null) {
     $defaultValue = defaultNullValue($defaultValue, $var);
     return empty($var) ? $defaultValue : $var;
+}
+
+function arrayValueInc(&$item, $inc) {
+    if (is_null($item)) {
+        $item = $inc;
+    } else {
+        $item+= $inc;
+    }
+}
+
+function sgn($num) {
+    DAssert::assert(is_numeric($num), 'sgn param must be numeric');
+    if ($num == 0) {
+        return 0;
+    }
+    return abs($num) / $num;
 }
 
 function strtonum($str) {
