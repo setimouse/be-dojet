@@ -1,5 +1,5 @@
 <?php
-class Dispatcher {
+class Dispatcher implements IDispatcher {
 
     /**
      * @var BaseWebService
@@ -40,15 +40,12 @@ class Dispatcher {
 
                 $action->execute();
 
-                $this->webService->dispatchFinished();
-
                 return ;
             }
         }
 
         header('HTTP/1.1 404 Not Found');
 
-        $this->webService->dispatchFinished();
     }
 
 }

@@ -21,6 +21,7 @@ abstract class WebService extends Service {
         $requestUri = $this->requestUriWillDispatch($_SERVER['REQUEST_URI']);
         $dispatcher = $this->dispatcher();
         $dispatcher->dispatch($requestUri);
+        $this->dispatchFinished();
     }
 
     abstract public function getActionPath();
