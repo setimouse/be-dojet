@@ -8,7 +8,7 @@
 class Dojet {
 
     /**
-     * @var BaseService
+     * @var Service
      **/
     protected $service;
 
@@ -19,13 +19,13 @@ class Dojet {
         $this->service = $service;
 
         //  include configs
-        $this->load_all_configs();
+        $this->load_all_configs($service->configDelegate());
 
         $service->dojetDidStart();
     }
 
-    private function load_all_configs() {
-        $arrConfigs = $this->service->configDelegate()->getConfigFiles();
+    private function load_all_configs(IConfigDelegate $configDelegate) {
+        $arrConfigs = $configDelegate->getConfigFiles();
 
         foreach ($arrConfigs as $confFile) {
             Config::loadConfig($confFile);
