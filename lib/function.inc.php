@@ -103,7 +103,7 @@ function printbr($str, $flush = true) {
 	if ( $flush ) flush();
 }
 
-function println($str, $flush = true){
+function println($str = '', $flush = true){
 	if ( is_array($str) ) {
 		$str = print_r($str, true);
 	}
