@@ -12,6 +12,10 @@ class MRequest {
         return isset($_POST[$key]) ? $_POST[$key] : null;
     }
 
+    public static function allPost() {
+        return $_POST;
+    }
+
     public static function request($key) {
         return isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;
     }
