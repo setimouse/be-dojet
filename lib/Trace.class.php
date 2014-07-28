@@ -1,7 +1,12 @@
 <?php
+/**
+ * Trace
+ *
+ * @author liyan
+ * @since 2009
+ */
+class Trace implements ITraceDelegate {
 
-class Trace
-{
     private static $instance;
 
     const DEBUG = 0x1;
@@ -17,6 +22,8 @@ class Trace
 
     private static $requestId; //  identify current request
 
+    protected static $delegate = null;
+
     /**
      * @return Trace
      */
@@ -31,36 +38,39 @@ class Trace
         return self::$instance;
     }
 
+    public static function setDelegate(ITraceDelegate $delegate) {
+        self::$delegate = $delegate;
+    }
+
     public static function requestID() {
         return self::$requestId;
     }
 
-
-    public static function debug($msg, $file = null, $line = null)
+    public static function debug($msg, $file = '', $line = '')
     {
         $traceObj = self::getInstance();
         $traceObj->_trace($msg, self::DEBUG, $file, $line);
     }
 
-    public static function notice($msg, $file = null, $line = null)
+    public static function notice($msg, $file = '', $line = '')
     {
         $traceObj = self::getInstance();
         $traceObj->_trace($msg, self::NOTICE, $file, $line);
     }
 
-    public static function verbose($msg, $file = null, $line = null)
+    public static function verbose($msg, $file = '', $line = '')
     {
         $traceObj = self::getInstance();
         $traceObj->_trace($msg, self::VERBOSE, $file, $line);
     }
 
-    public static function warn($msg, $file = null, $line = null)
+    public static function warn($msg, $file = '', $line = '')
     {
         $traceObj = self::getInstance();
         $traceObj->_trace($msg, self::WARN, $file, $line);
     }
 
-    public static function fatal($msg, $file = null, $line = null)
+    public static function fatal($msg, $file = '', $line = '')
     {
         $traceObj = self::getInstance();
         $traceObj->_trace($msg, self::ERROR, $file, $line);
@@ -73,6 +83,11 @@ class Trace
             return;
         }
 
+        $delegate = self::$delegate instanceof ITraceDelegate ? self::$delegate : $this;
+        $delegate->write($msg, $level, $file, $line);
+    }
+
+    public function write($msg, $level, $file = '', $line = '') {
         $path = self::getLogPath();
         if (!$path) {
             return;
@@ -88,7 +103,7 @@ class Trace
         $pid = self::getpid();
         $ip = getUserClientIp();
 
-        $trace = sprintf("%s|%ld|%ld|%s|%d| %s",
+        $trace = sprintf("%s %ld %ld %s %d  %s",
                 date("y-m-d H:i:s"),
                 $pid,
                 self::$requestId,
@@ -113,7 +128,7 @@ class Trace
         }
     }
 
-    public static function getLogPath() {
+    protected static function getLogPath() {
         $path = Config::runtimeConfigForKeyPath('global.log_path');
         return $path;
     }
