@@ -22,7 +22,7 @@ abstract class BaseAction {
      * @param string $key
      * @param mix $value
      */
-    public function assign($key, $value) {
+    protected function assign($key, $value) {
         $this->tplData[$key] = $value;
     }
 
@@ -31,7 +31,7 @@ abstract class BaseAction {
      *
      * @param string $template
      */
-    public function display($template) {
+    protected function display($template) {
         $templateFile = $template;
         DAssert::assert(file_exists($templateFile), 'template not exist. '.$template);
 
@@ -44,18 +44,18 @@ abstract class BaseAction {
         include($templateFile);
     }
 
-    public function display404() {
+    protected function display404() {
         header('HTTP/1.1 404 Not Found', true);
         exit();
     }
 
-    public function addHeader($key, $value) {
+    protected function addHeader($key, $value) {
         DAssert::assert(is_string($key) && is_string($value), 'header must be string',
             __FILE__, __LINE__);
         $this->arrHeader[$key] = $value;
     }
 
-    public function setExpire($timestamp) {
+    protected function setExpire($timestamp) {
         $gmtime = date("r", $timestamp);
         $this->addHeader('Expires', $gmtime);
     }

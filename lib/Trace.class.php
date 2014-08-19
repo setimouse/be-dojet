@@ -130,6 +130,9 @@ class Trace implements ITraceDelegate {
 
     protected static function getLogPath() {
         $path = Config::runtimeConfigForKeyPath('global.log_path');
+        if (empty($path)) {
+            $path = sys_get_temp_dir().'/';
+        }
         return $path;
     }
 
