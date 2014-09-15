@@ -16,7 +16,11 @@ DAutoloader::register();
 
 function startWebService(WebService $webService) {
     $dojet = new Dojet();
-    $dojet->start($webService);
+    try {
+        $dojet->start($webService);
+    } catch (Exception $e) {
+        print 'exception occured, msg: '.$e->getMessage().' errno: '.$e->getCode();
+    }
 }
 
 function startCliService(CliService $cliService) {
