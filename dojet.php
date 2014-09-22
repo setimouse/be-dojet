@@ -19,7 +19,9 @@ function startWebService(WebService $webService) {
     try {
         $dojet->start($webService);
     } catch (Exception $e) {
-        print 'exception occured, msg: '.$e->getMessage().' errno: '.$e->getCode();
+        $error = 'exception occured, msg: '.$e->getMessage().' errno: '.$e->getCode();
+        print $error;
+        Trace::error($error);
     }
 }
 
