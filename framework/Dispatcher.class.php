@@ -28,7 +28,7 @@ class Dispatcher implements IDispatcher {
                 $classFile = $actionPath.$actionName.'.class.php';
 
                 DAssert::assert(file_exists($classFile),
-                    'ui action does not exist', __FILE__, __LINE__);
+                    'ui action does not exist, file='.$classFile, __FILE__, __LINE__);
 
                 require_once($classFile);
 
