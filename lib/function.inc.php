@@ -347,81 +347,6 @@ function str_cut($string, $maxLength, $encoding='utf-8', $terminator='...') {
     return $string;
 }
 
-/**
- * 中英混合等宽截取字符串(同时支持utf-8和gb2312编码，超出部分用...代替，未超出则不显示...)
- *@author wuchaobo
- *@param $str 所要截取的字符串
- *@param $cut_width 所要截取的宽度，以汉字计数，每个汉字宽度1，一个汉字的宽度相当于英文字符的2个字符的宽度
- *@param $charset 字符编码
- *@param $suffix 超出部分显示的字符串
- */
-function str_width_cut($str,$cut_width,$charset="UTF-8",$suffix="...") {
-    if($cut_width<=0) return $str;//验证截取宽度,如果是0将不截取
-    $cut_en_width = $cut_width * 2;//要截取的英文字符数
-    $strEnWidth = strEnWidth($str,$charset);//给定字符串总的英文字符数
-    if($strEnWidth <= $cut_en_width){
-    	return $str;
-    }else{
-    	if(!empty($suffix))
-    		$cut_en_width -= 4;//因为这时候要加后缀，所以留出4个英文字符位置出来供后缀使用
-    }
-
-    $cut_en_width_counter = 0;//英文字符计数器$cut_en_width_counter = 0;//英文字符计数器
-    $i=0;
-    $result_str = '';
-    while ($i < strlen($str)) {
-        //判断是否是ASCII扩展字符
-        if(ord($str[($i)])>127){
-            $cut_en_width_counter += 2;
-            if($charset=="UTF-8"){
-                $result_str .=$str[$i].$str[$i+1].$str[$i+2];
-                //如果是UTF-8跳过3个ASCII
-                $i=$i+3;
-            }else{
-                $result_str .=$str[$i].$str[$i+1];
-                $i=$i+2;
-            }
-        }else{
-            $cut_en_width_counter++;
-            $result_str .=$str[$i];
-            $i++;
-        }
-        if(($cut_en_width_counter >= $cut_en_width)){break;}
-    }
-    $result_str .= $suffix;
-    return $result_str;
-}
-/**
- * 获取一个字符串的英文宽度，一个汉字的英文宽度为2
- * 如"测试test"字符串的英文宽度为8
- */
-function strEnWidth($str,$charset="UTF-8"){
-	$length = 0;
-	$i = 0;
-	while($i < strlen($str)){
-		if(ord($str[($i)])>127){
-			if($charset=="UTF-8"){
-				$i += 3;
-			}else{
-				$i += 2;
-			}
-			$length += 2;
-		}else{
-			$i++;
-			$length++;
-		}
-	}
-	return $length;
-}
-/**
- * 获取一个字符串的中文宽度，二个英文字母的宽度为1
- * 如"测试test"字符串的英文宽度为4
- */
-function strZhWidth($str,$charset="UTF-8"){
-    $strEnWidth = strEnWidth($str,$charset);
-    return ceil($strEnWidth/2);
-}
-
 if (!function_exists('sys_get_temp_dir')) {
     function sys_get_temp_dir() {
         if (!empty($_ENV['TMP'])) { return realpath($_ENV['TMP']); }
@@ -469,6 +394,22 @@ function array_column_recursive($array, $columnPath) {
         $ret[] = array_column_recursive($item, $nextKeypath);
     }
     return $ret;
+}
+
+function array_group($array, $key) {
+    $ret = array();
+    foreach ($array as $value) {
+        $ret[$value[$key]][] = $value;
+    }
+    return $ret;
+}
+
+function array_column_unique($array, $column) {
+    $ret = array();
+    foreach ($array as $value) {
+        $ret[] = $value[$column];
+    }
+    return array_unique($ret);
 }
 
 function array_keypath($array, $keypath) {
