@@ -38,6 +38,10 @@ class DAssert {
         DAssert::assert(is_numeric($var), 'nan, '.var_export($var, true));
     }
 
+    public static function assertNumeric($var) {
+        DAssert::assert(is_numeric($var), 'nan, '.var_export($var, true));
+    }
+
     /**
      * 数字数组断言
      *
