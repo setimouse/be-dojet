@@ -9,11 +9,8 @@ abstract class BaseAction {
 
     protected $tplData;
 
-    protected $arrHeader;
-
     function __construct() {
         $this->tplData = array();
-        $this->arrHeader = array();
     }
 
     /**
@@ -37,27 +34,12 @@ abstract class BaseAction {
 
         $collision = extract($this->tplData, EXTR_PREFIX_ALL, 'tpl');
 
-        foreach ($this->arrHeader as $key => $value) {
-            header($key.":".$value);
-        }
-
         include($templateFile);
     }
 
     protected function display404() {
         header('HTTP/1.1 404 Not Found', true);
         exit();
-    }
-
-    protected function addHeader($key, $value) {
-        DAssert::assert(is_string($key) && is_string($value), 'header must be string',
-            __FILE__, __LINE__);
-        $this->arrHeader[$key] = $value;
-    }
-
-    protected function setExpire($timestamp) {
-        $gmtime = date("r", $timestamp);
-        $this->addHeader('Expires', $gmtime);
     }
 
     abstract public function execute();
