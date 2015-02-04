@@ -27,4 +27,8 @@ abstract class AppHelper implements IConfigDelegate, IAutoloader {
         return '';
     }
 
+    public function getDBAdapter() {
+        return new DBMysqli();
+    }
+
 }
