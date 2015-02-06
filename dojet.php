@@ -21,7 +21,7 @@ function startWebService(WebService $webService) {
     } catch (Exception $e) {
         $error = 'exception occured, msg: '.$e->getMessage().' errno: '.$e->getCode();
         print $error;
-        Trace::error($error);
+        Trace::fatal($error);
     }
 }
 
