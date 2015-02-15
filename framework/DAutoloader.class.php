@@ -8,6 +8,8 @@ class DAutoloader {
      **/
     private $delegate;
 
+    protected static $autoloadPaths = array();
+
     public static function getInstance() {
         if (is_null(self::$instance)) {
             self::$instance = new DAutoloader();
@@ -27,6 +29,21 @@ class DAutoloader {
     public function setDelegate(IAutoloader $delegate) {
         DAssert::assert($delegate instanceof IAutoloader, 'autoloader must be IAutoloader');
         $this->delegate = $delegate;
+    }
+
+    public static function addAutoloadPath($autoloadPath) {
+        $key = md5($autoloadPath);
+        self::$autoloadPaths[$key] = $autoloadPath;
+    }
+
+    public static function addAutoloadPathArray($arrAutoloadPath) {
+        foreach ($arrAutoloadPath as $autoloadPath) {
+            self::addAutoloadPath($autoloadPath);
+        }
+    }
+
+    public static function getAutoloadPath() {
+        return self::$autoloadPaths;
     }
 
     protected function getClassCacheKey($className, IAutoloader $autoloader) {
@@ -62,13 +79,7 @@ class DAutoloader {
     }
 
     protected function autoload($className) {
-        $include_path = array(
-            DLIB,
-            DMODEL,
-            DUTIL,
-            FRAMEWORK,
-            DOJET_PATH,
-        );
+        $include_path = self::$autoloadPaths;
 
         if ($this->delegate) {
             $include_path = array_merge($include_path, $this->delegate->getAutoloadPath());

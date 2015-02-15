@@ -12,6 +12,16 @@ include(FRAMEWORK.'DAutoloader.class.php');
 
 DAutoloader::register();
 
+DAutoloader::addAutoloadPathArray(
+    array(
+        DLIB,
+        DMODEL,
+        DUTIL,
+        FRAMEWORK,
+    )
+);
+
+
 ////////////////////////////////////////
 
 function startWebService(WebService $webService) {
