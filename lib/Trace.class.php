@@ -24,6 +24,8 @@ class Trace implements ITraceDelegate {
 
     protected static $delegate = null;
 
+    protected static $traceLevel = 0xffff;
+
     /**
      * @return Trace
      */
@@ -40,6 +42,10 @@ class Trace implements ITraceDelegate {
 
     public static function setDelegate(ITraceDelegate $delegate) {
         self::$delegate = $delegate;
+    }
+
+    public static function setTraceLevel($traceLevel) {
+        self::$traceLevel = $traceLevel;
     }
 
     public static function requestID() {
@@ -78,7 +84,7 @@ class Trace implements ITraceDelegate {
 
     protected function _trace($msg, $level, $file = '', $line = '')
     {
-        $traceLevel = Config::runtimeConfigForKeyPath('global.traceLevel');
+        $traceLevel = Config::runtimeConfigForKeyPath('global.traceLevel') & self::$traceLevel;
         if (0 === $level & $traceLevel) {
             return;
         }
