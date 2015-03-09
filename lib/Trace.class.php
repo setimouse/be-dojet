@@ -89,7 +89,7 @@ class Trace implements ITraceDelegate {
     protected function _trace($msg, $level, $file = '', $line = '')
     {
         $traceLevel = Config::runtimeConfigForKeyPath('global.traceLevel') & self::$traceLevel;
-        if (0 === $level & $traceLevel) {
+        if (0 === ($level & $traceLevel)) {
             return;
         }
 
