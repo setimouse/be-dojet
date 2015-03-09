@@ -26,7 +26,7 @@ class DAssert {
         Trace::fatal('assert failed. '.$message.', '.$file.', '.$line);
         println('assert failed. '.$message.', '.$file.', '.$line);
 
-        assert($condition);
+        // assert($condition);
         die();
     }
 
