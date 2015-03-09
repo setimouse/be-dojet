@@ -48,6 +48,10 @@ class Trace implements ITraceDelegate {
         self::$traceLevel = $traceLevel;
     }
 
+    public static function traceOff() {
+        self::setTraceLevel(self::TRACE_OFF);
+    }
+
     public static function requestID() {
         return self::$requestId;
     }
