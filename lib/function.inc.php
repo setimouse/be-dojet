@@ -115,6 +115,11 @@ function printa($array) {
 	print nl2br(str_replace(array(' ', "\t"), '&nbsp;', print_r($array, true)));
 }
 
+function printlog($str = '') {
+    $log = sprintf("%s %s %s %s", date("y-m-d H:i:s"), posix_getpid(), crc32(uniqid().microtime(true)), $str);
+    println($log, true);
+}
+
 function nicetime($timestamp) {
 	$duration = time() - $timestamp;
 
