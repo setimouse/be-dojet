@@ -142,6 +142,11 @@ function nicetime($timestamp) {
 	return $strEcho;
 }
 
+function datetime($time = null) {
+    is_null($time) && $time = time();
+    return date("Y-m-d H:i:s", $time);
+}
+
 function redirect($location) {
 	@header("Location: $location");
 	exit();
