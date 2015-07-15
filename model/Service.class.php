@@ -6,8 +6,6 @@
  */
 abstract class Service {
 
-    abstract public function configDelegate();
-
     public function dojetDidStart() {}
 
 }

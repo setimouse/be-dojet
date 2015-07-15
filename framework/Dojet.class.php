@@ -1,7 +1,7 @@
 <?php
 /**
  * @author     Leeyan <setimouse@gmail.com>
- * @copyright  2009-2014 Leeyan.
+ * @copyright  2009-2015 Leeyan.
  * @license    http://www.opensource.org/licenses/mit-license.php  MIT License
  * @version    0.1
  */
@@ -18,18 +18,7 @@ class Dojet {
 
         $this->service = $service;
 
-        //  include configs
-        $this->load_all_configs($service->configDelegate());
-
         $service->dojetDidStart();
-    }
-
-    private function load_all_configs(IConfigDelegate $configDelegate) {
-        $arrConfigs = $configDelegate->getConfigFiles();
-
-        foreach ($arrConfigs as $confFile) {
-            Config::loadConfig($confFile);
-        }
     }
 
 }
