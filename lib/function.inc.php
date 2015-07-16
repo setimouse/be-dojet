@@ -1,43 +1,43 @@
 <?php
-/*********************	charset	**********************/
+/*********************  charset **********************/
 function gb2u($s) {
-	return _iconvEx('GB18030', 'UTF-8', $s);
+    return _iconvEx('GB18030', 'UTF-8', $s);
 }
 
 function u2gb($s) {
-	return _iconvEx('UTF-8', 'GB18030', $s);
+    return _iconvEx('UTF-8', 'GB18030', $s);
 }
 
 function _iconvEx($in_charset, $out_charset, $str) {
     $ret = null;
-	if ( is_array($str) ) {
-		foreach ( $str as $key => $value ) {
-			$ret[$key] = _iconvEx($in_charset, $out_charset, $value);
-		}
-	} else {
-		$ret = @iconv($in_charset, $out_charset, $str);
-	}
-	return $ret;
+    if ( is_array($str) ) {
+        foreach ( $str as $key => $value ) {
+            $ret[$key] = _iconvEx($in_charset, $out_charset, $value);
+        }
+    } else {
+        $ret = @iconv($in_charset, $out_charset, $str);
+    }
+    return $ret;
 }
 
 function array2object($array) {
-	$obj = (object)$array;
-	foreach ((array)$array as $key => $value) {
-		if (is_array($value)) {
-			$obj->$key = array2object($value);
-		}
-	}
-	return $obj;
+    $obj = (object)$array;
+    foreach ((array)$array as $key => $value) {
+        if (is_array($value)) {
+            $obj->$key = array2object($value);
+        }
+    }
+    return $obj;
 }
 
 function object2array($object) {
     if (is_object($object)) {
-    	$object = (array)$object;
+        $object = (array)$object;
     }
     if (is_array($object)) {
-    	foreach ($object as $key => $value) {
-    	    $object[$key] = object2array($value);
-    	}
+        foreach ($object as $key => $value) {
+            $object[$key] = object2array($value);
+        }
     }
     return $object;
 }
@@ -65,54 +65,54 @@ function array_values_recursive($array) {
     return $values;
 }
 
-/*********************** other functions	*********************/
+/*********************** other functions    *********************/
 function pglist($pg, $pgpadding, $pgcount, $tpl_current, $tpl_link, $tpl_padding = '...') {
-	$thepage = 1;
-	$firstpage = ($pg == 1) ? str_replace('{p}', 1, $tpl_current) : strtr($tpl_link, array('{p}' => 1, '{pgno}' => 1));
+    $thepage = 1;
+    $firstpage = ($pg == 1) ? str_replace('{p}', 1, $tpl_current) : strtr($tpl_link, array('{p}' => 1, '{pgno}' => 1));
 
-	$midlist = '';
-	for ($i = max($pg - $pgpadding, 2); $i <= min($pg + $pgpadding, $pgcount - 1); $i++) {
-		if ( $i == $pg ) {
-			$midlist.= str_replace('{p}', $i, $tpl_current);
-		} else {
-			$midlist.= strtr($tpl_link, array('{p}' => $i, '{pgno}' => $i));
-		}
-	}
+    $midlist = '';
+    for ($i = max($pg - $pgpadding, 2); $i <= min($pg + $pgpadding, $pgcount - 1); $i++) {
+        if ( $i == $pg ) {
+            $midlist.= str_replace('{p}', $i, $tpl_current);
+        } else {
+            $midlist.= strtr($tpl_link, array('{p}' => $i, '{pgno}' => $i));
+        }
+    }
 
-	$lastpage = '';
-	$pgcount > 1 &&
-		$lastpage = ($pg == $pgcount) ? str_replace('{p}', $pgcount, $tpl_current) : strtr($tpl_link, array('{p}' => $pgcount, '{pgno}' => $pgcount));
+    $lastpage = '';
+    $pgcount > 1 &&
+        $lastpage = ($pg == $pgcount) ? str_replace('{p}', $pgcount, $tpl_current) : strtr($tpl_link, array('{p}' => $pgcount, '{pgno}' => $pgcount));
 
-	$ret = '';
-	$ret.= $firstpage;
-	$ret.= $pg - $pgpadding > 2 ? $tpl_padding : '';
-	$ret.= $midlist;
-	$ret.= $pg + $pgpadding < $pgcount - 1 ? $tpl_padding : '';
-	$ret.= $lastpage;
+    $ret = '';
+    $ret.= $firstpage;
+    $ret.= $pg - $pgpadding > 2 ? $tpl_padding : '';
+    $ret.= $midlist;
+    $ret.= $pg + $pgpadding < $pgcount - 1 ? $tpl_padding : '';
+    $ret.= $lastpage;
 
-	return $ret;
+    return $ret;
 }
 
 function printbr($str, $flush = true) {
-	if ( is_array($str) ) {
-		$str = print_r($str, true);
-	}
-	$str = str_replace(" ", "&nbsp;", $str);
-	$str = nl2br($str);
-	print $str."<br />";
-	if ( $flush ) flush();
+    if ( is_array($str) ) {
+        $str = print_r($str, true);
+    }
+    $str = str_replace(" ", "&nbsp;", $str);
+    $str = nl2br($str);
+    print $str."<br />";
+    if ( $flush ) flush();
 }
 
 function println($str = '', $flush = true){
-	if ( is_array($str) ) {
-		$str = print_r($str, true);
-	}
-	print $str."\n";
-	if ( $flush ) flush();
+    if ( is_array($str) ) {
+        $str = print_r($str, true);
+    }
+    print $str."\n";
+    if ( $flush ) flush();
 }
 
 function printa($array) {
-	print nl2br(str_replace(array(' ', "\t"), '&nbsp;', print_r($array, true)));
+    print nl2br(str_replace(array(' ', "\t"), '&nbsp;', print_r($array, true)));
 }
 
 function printlog($str = '') {
@@ -121,25 +121,25 @@ function printlog($str = '') {
 }
 
 function nicetime($timestamp) {
-	$duration = time() - $timestamp;
+    $duration = time() - $timestamp;
 
-	$strEcho = date("Y-m-d H:i", $timestamp);
+    $strEcho = date("Y-m-d H:i", $timestamp);
 
-	if( $duration < 60 ){
-		$strEcho = "刚刚";
-	}elseif( $duration < 3600 ){
-		$strEcho = intval($duration/60)."分钟";
-	}elseif( $duration >= 3600 && $duration <= 86400  ){
-		$strEcho = intval($duration/3600)."小时";
-	}elseif( $duration > 86400 && $duration <= 172800 ){
-		$strEcho = '昨天'.date("H:i", $timestamp);
-	}elseif( $duration > 172800 && $duration <= 86400 * 365 ){
-		$strEcho = floor($duration / 86400).'天前';
-	} elseif ( date("Y") === date("Y", $timestamp) ) {
-		$strEcho = date("Y-m-d H:i", $timestamp);
-	}
+    if( $duration < 60 ){
+        $strEcho = "刚刚";
+    }elseif( $duration < 3600 ){
+        $strEcho = intval($duration/60)."分钟";
+    }elseif( $duration >= 3600 && $duration <= 86400  ){
+        $strEcho = intval($duration/3600)."小时";
+    }elseif( $duration > 86400 && $duration <= 172800 ){
+        $strEcho = '昨天'.date("H:i", $timestamp);
+    }elseif( $duration > 172800 && $duration <= 86400 * 365 ){
+        $strEcho = floor($duration / 86400).'天前';
+    } elseif ( date("Y") === date("Y", $timestamp) ) {
+        $strEcho = date("Y-m-d H:i", $timestamp);
+    }
 
-	return $strEcho;
+    return $strEcho;
 }
 
 function datetime($time = null) {
@@ -148,24 +148,19 @@ function datetime($time = null) {
 }
 
 function redirect($location) {
-	@header("Location: $location");
-	exit();
-}
-
-function get_microtime() {
-	list($usec, $sec) = explode(' ', microtime());
-	return ((float)$usec + (float)$sec);
+    @header("Location: $location");
+    exit();
 }
 
 function safeHtml($html) {
-	return htmlspecialchars($html, ENT_QUOTES);
+    return htmlspecialchars($html, ENT_QUOTES);
 }
 
 function safeUrl($url) {
-	$url = str_replace('&amp;', '&', $url);
-	$url = str_replace('&', '&amp;', $url);
+    $url = str_replace('&amp;', '&', $url);
+    $url = str_replace('&', '&amp;', $url);
 
-	return $url;
+    return $url;
 }
 
 function safeUrlencode($str) {
@@ -193,11 +188,6 @@ function safeCallMethod($obj, $func, &$params) {
         return call_user_func_array($funcCall, $args);
     }
     return null;
-}
-
-function replace_spec_char($url)
-{
-	return str_replace("'", "\'", $url);
 }
 
 /**
@@ -262,99 +252,12 @@ function defaultEmptyValue($var, $defaultValue = null) {
     return empty($var) ? $defaultValue : $var;
 }
 
-function arrayValueInc(&$item, $inc) {
-    if (is_null($item)) {
-        $item = $inc;
-    } else {
-        $item+= $inc;
-    }
-}
-
 function sgn($num) {
     DAssert::assert(is_numeric($num), 'sgn param must be numeric');
     if ($num == 0) {
         return 0;
     }
     return abs($num) / $num;
-}
-
-function strtonum($str) {
-    $length = strlen($str);
-    $result = '';
-    for ($i = 0; $i < $length; $i++) {
-        $stri = $str{$i};
-        if ($stri >= '0' && $stri <= '9') {
-        	$result.= $stri;
-        	continue;
-        }
-        break;
-    }
-    return '' === $result ? '0' : $result;
-}
-
-function mkdirEx($pathname) {
-	if (file_exists($pathname))
-	{
-		if (is_dir($pathname))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	$strParentDir = dirname($pathname);
-	if ( $strParentDir === $pathname )
-	{
-		return false;
-	}
-	mkdirEx($strParentDir);
-	$ret = @mkdir($pathname);
-
-	return $ret;
-}
-
-function rmdirEx($dirname, $force = false) {
-	if ( false === $force )
-	{
-		return @rmdir($dirname);
-	}
-
-	if ( $dh = @opendir($dirname) )
-	{
-		while ( $file = @readdir($dh) )
-		{
-			if ( '.' === $file || '..' === $file )
-			{
-				continue;
-			}
-			$strFile = $dirname.'/'.$file;
-			if ( is_file($strFile) )
-			{
-				unlink($strFile);
-			}
-			elseif ( is_dir($strFile) )
-			{
-				$ret = rmdirEx($strFile, $force);
-			}
-			else
-			{
-				return false;
-			}
-		}
-		closedir($dh);
-	}
-	$ret = @rmdir($dirname);
-	return $ret;
-}
-
-function str_cut($string, $maxLength, $encoding='utf-8', $terminator='...') {
-    if (mb_strlen($string, $encoding) > $maxLength) {
-        return mb_substr($string, 0, $maxLength-1, $encoding).$terminator;
-    }
-    return $string;
 }
 
 if (!function_exists('sys_get_temp_dir')) {
@@ -474,74 +377,6 @@ if (!function_exists('posix_getpid')) {
     }
 }
 
-/**
- * 时间戳
- *
- * @return float
- */
-function microtime_float(){
-    list($usec, $sec) = explode(" ", microtime());
-    return ((float)$usec + (float)$sec);
-}
-
 function timems() {
     return round(microtime_float() * 1000);
 }
-
-/**
- * 去掉
- *
- * @return string
- */
-function get_baseurl($url)
-{
-	if(empty($url) || !is_string($url))
-		return false;
-
-    $location = strpos($url, '?');
-    if(false !== $location) {
-        $url = substr($url, 0, $location);
-    }
-
-    $location = strpos($url, '#');
-    if (false !== $location) {
-        $url = substr($url, 0, $location);
-    }
-
-    return $url;
-}
-
-/**
- * 多维数组按某一列排序(array以key作为键值)
- *
- * @return string
- */
-function ksort_with_row($array, $rowKey)
-{
-	if(empty($array))
-		return false;
-
-	$result = array();
-	$kvList = array();
-	foreach ($array as $key => $value) {
-		$kvList[$key] = $value[$rowKey];
-	}
-	arsort($kvList);
-
-	foreach ($kvList as $key => $value)
-		$result[$key] = $array[$key];
-		return $result;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-

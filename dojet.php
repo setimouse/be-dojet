@@ -7,25 +7,19 @@ define('DUTIL',     DOJET_PATH.'util/');
 
 date_default_timezone_set('Asia/Chongqing');
 
-include(DLIB.'function.inc.php');
-include(FRAMEWORK.'DAutoloader.class.php');
+include DLIB.'function.inc.php';
+require FRAMEWORK.'Dojet.class.php';
 
-DAutoloader::register();
+$dojet = Dojet::getInstance();
 
-DAutoloader::addAutoloadPathArray(
-    array(
-        DLIB,
-        DMODEL,
-        DUTIL,
-        FRAMEWORK,
-    )
-);
+$autoloader = DAutoloader::getInstance();
 
+$dojet->addAutoloader($autoloader);
 
 ////////////////////////////////////////
 
 function startWebService(WebService $webService) {
-    $dojet = new Dojet();
+    $dojet = Dojet::getInstance();
     try {
         $dojet->start($webService);
     } catch (Exception $e) {
