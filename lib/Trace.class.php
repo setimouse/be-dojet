@@ -22,9 +22,13 @@ class Trace implements ITraceDelegate {
 
     private static $requestId; //  identify current request
 
-    protected static $delegate = null;
+    protected $delegate;
 
     protected static $traceLevel = 0xffff;
+
+    function __construct() {
+        $this->setDelegate($this);
+    }
 
     /**
      * @return Trace
@@ -41,7 +45,8 @@ class Trace implements ITraceDelegate {
     }
 
     public static function setDelegate(ITraceDelegate $delegate) {
-        self::$delegate = $delegate;
+        $traceObj = self::getInstance();
+        $traceObj->delegate = $delegate;
     }
 
     public static function setTraceLevel($traceLevel) {
@@ -93,7 +98,7 @@ class Trace implements ITraceDelegate {
             return;
         }
 
-        $delegate = self::$delegate instanceof ITraceDelegate ? self::$delegate : $this;
+        $delegate = $this->delegate;
         $delegate->write($msg, $level, $file, $line);
     }
 

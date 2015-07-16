@@ -9,10 +9,16 @@ date_default_timezone_set('Asia/Chongqing');
 
 include DLIB.'function.inc.php';
 require FRAMEWORK.'Dojet.class.php';
+require FRAMEWORK.'DAutoloader.class.php';
 
 $dojet = Dojet::getInstance();
 
 $autoloader = DAutoloader::getInstance();
+$autoloader->addAutoloadPathArray(
+    array(
+        FRAMEWORK, DLIB, DMODEL, DUTIL
+        )
+    );
 
 $dojet->addAutoloader($autoloader);
 

@@ -1,5 +1,5 @@
 <?php
-require_once(DMODEL.'IAutoloader.class.php');
+require_once(DLIB.'IAutoloader.class.php');
 
 class DAutoloader implements IAutoloader {
 
