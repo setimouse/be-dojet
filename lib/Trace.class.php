@@ -44,9 +44,8 @@ class Trace implements ITraceDelegate {
         return self::$instance;
     }
 
-    public static function setDelegate(ITraceDelegate $delegate) {
-        $traceObj = self::getInstance();
-        $traceObj->delegate = $delegate;
+    public function setDelegate(ITraceDelegate $delegate) {
+        $this->delegate = $delegate;
     }
 
     public static function setTraceLevel($traceLevel) {
