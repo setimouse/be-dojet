@@ -33,14 +33,11 @@ class Trace implements ITraceDelegate {
     /**
      * @return Trace
      */
-    protected static function getInstance()
-    {
-        if (!(self::$instance instanceof Trace))
-        {
+    protected static function getInstance() {
+        if (!(self::$instance instanceof Trace)) {
             self::$instance = new Trace();
             self::$requestId = crc32(uniqid().microtime(true));
         }
-
         return self::$instance;
     }
 
@@ -60,38 +57,32 @@ class Trace implements ITraceDelegate {
         return self::$requestId;
     }
 
-    public static function debug($msg, $file = '', $line = '')
-    {
+    public static function debug($msg, $file = '', $line = '') {
         $traceObj = self::getInstance();
         $traceObj->_trace($msg, self::DEBUG, $file, $line);
     }
 
-    public static function notice($msg, $file = '', $line = '')
-    {
+    public static function notice($msg, $file = '', $line = '') {
         $traceObj = self::getInstance();
         $traceObj->_trace($msg, self::NOTICE, $file, $line);
     }
 
-    public static function verbose($msg, $file = '', $line = '')
-    {
+    public static function verbose($msg, $file = '', $line = '') {
         $traceObj = self::getInstance();
         $traceObj->_trace($msg, self::VERBOSE, $file, $line);
     }
 
-    public static function warn($msg, $file = '', $line = '')
-    {
+    public static function warn($msg, $file = '', $line = '') {
         $traceObj = self::getInstance();
         $traceObj->_trace($msg, self::WARN, $file, $line);
     }
 
-    public static function fatal($msg, $file = '', $line = '')
-    {
+    public static function fatal($msg, $file = '', $line = '') {
         $traceObj = self::getInstance();
         $traceObj->_trace($msg, self::ERROR, $file, $line);
     }
 
-    protected function _trace($msg, $level, $file = '', $line = '')
-    {
+    protected function _trace($msg, $level, $file = '', $line = '') {
         $traceLevel = Config::runtimeConfigForKeyPath('global.traceLevel') & self::$traceLevel;
         if (0 === ($level & $traceLevel)) {
             return;
@@ -150,39 +141,36 @@ class Trace implements ITraceDelegate {
         return $path;
     }
 
-    protected function getpid()
-    {
-        if ( 'WIN' === substr(PHP_OS, 0, 3) )
-        {
+    protected function getpid() {
+        if ( 'WIN' === substr(PHP_OS, 0, 3) ) {
             return 0;
         }
 
         return posix_getpid();
     }
 
-    protected function getLogFile($level)
-    {
-        $strLogfile = date("Ymd", time());
-        switch ($level)
-        {
+    protected function getLogFile($level) {
+        $strLogfile = 'dojet.';
+        switch ($level) {
             case self::DEBUG:
-                $strLogfile = 'debug.'.$strLogfile;
+                $strLogfile.= 'debug.';
                 break;
             case self::ERROR:
-                $strLogfile = 'error.'.$strLogfile;
+                $strLogfile.= 'error.';
                 break;
             case self::WARN:
-                $strLogfile = 'warn.'.$strLogfile;
+                $strLogfile.= 'warn.';
                 break;
             case self::VERBOSE:
-                $strLogfile = 'verbose.'.$strLogfile;
+                $strLogfile.= 'verbose.';
                 break;
             case self::NOTICE:
-                $strLogfile = 'notice.'.$strLogfile;
+                $strLogfile.= 'notice.';
                 break;
+            default:
+                throw new Exception("illegal log level", 1);
         }
-
-        $strLogfile = 'dojet.'.$strLogfile.'.log';
+        $strLogfile.= date("Ymd", time()).'.log';
         return $strLogfile;
     }
 }
